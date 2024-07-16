@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 
 import Swal from 'sweetalert2';
-import useAuth from './Hooks/useAuth';
-
-// import useAdmin from '../../Hooks/useAdmin/useAdmin';
+import useAxiosSecure from './Hooks/useAxiosSecure';
+import { AuthContext } from '../AuthProvider/AuthProvider';
 
 const Navbar = () => {
-  // const { isAdmin } = useAdmin();
+  const { logout } = useContext(AuthContext);
   const localTheme = localStorage.getItem('theme');
-  const { user, logOut } = useAuth();
+  const axiosSecure = useAxiosSecure();
   const [theme, setTheme] = useState(localTheme);
   const [type, setType] = useState(false);
+  const user = '';
   const loggedUser = {
     role: '',
   };
@@ -37,20 +37,7 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-    logOut()
-      .then(result => {
-        console.log(result);
-        Swal.fire({
-          icon: 'success',
-          title: 'Log Out successful',
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      })
-      .catch(error => {
-        console.error(error.message);
-      });
-    // console.log(user);
+    logout();
   };
 
   //https://i.postimg.cc/66LCsndF/light.png
@@ -140,7 +127,7 @@ const Navbar = () => {
     <div
       className={
         type
-          ? 'navbar fixed px-3 rounded-b-md z-50 text-white container pt-2 mx-auto bg-[#1a103d] '
+          ? 'navbar w-screen fixed px-3 rounded-b-md z-50 text-white container pt-2 mx-auto bg-[#1a103d] '
           : 'navbar fixed z-50 px-3 rounded-b-md text-black container pt-2 mx-auto  bg-[#F1F1F2]'
       }
     >
@@ -207,6 +194,12 @@ const Navbar = () => {
                         Register
                       </button>
                     </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="btn bg-blue-500 hover:bg-gray-500 text-white"
+                    >
+                      Log Out
+                    </button>
                   </div>
                 )}
               </div>
@@ -288,6 +281,13 @@ const Navbar = () => {
                   Register
                 </button>
               </Link>
+
+              <button
+                onClick={handleLogout}
+                className="btn bg-blue-500 hover:bg-gray-500 text-white"
+              >
+                Log Out
+              </button>
             </div>
           )}
         </div>

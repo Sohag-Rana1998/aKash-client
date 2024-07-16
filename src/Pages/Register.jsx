@@ -1,123 +1,65 @@
 import { Link, useNavigate } from 'react-router-dom';
 
 import { Helmet } from 'react-helmet-async';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { IoEye, IoEyeOff } from 'react-icons/io5';
 import Swal from 'sweetalert2';
 
 import toast from 'react-hot-toast';
 import useAxiosPublic from '../components/Hooks/useAxiosPublic';
-import useAuth from '../components/Hooks/useAuth';
+import axios from 'axios';
+import { AuthContext } from '../AuthProvider/AuthProvider';
 
 const Register = () => {
   const axiosPublic = useAxiosPublic();
+  const { register } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [type, setType] = useState(false);
-  const {
-    createUserByEmailAndPassword,
-    signInWithGoogle,
-    handleUpdateProfile,
-  } = useAuth();
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    const name = e.target.name.value;
-    const photo = e.target.photo.value;
-    const email = e.target.email.value;
-    const password = e.target.password.value;
+    const form = e.target;
+    const name = form.name.value;
+    const mobile = form.mobile.value;
+    const email = form.email.value;
+    const pin = form.password.value;
+    const confirmPassword = form.confirm_password.value;
+    const balance = 0;
+    const status = 'Pending';
+    const role = 'user';
 
-    if (!/[A-Z]/.test(password)) {
-      toast.error('Your Password Should Have One Uppercase Letter.');
+    if (password.length < 5) {
+      toast.error('Pin Must Be Minimum 05 Character.');
       return;
-    } else if (!/[a-z]/.test(password)) {
-      toast.error('Your Password Should Have One Lowercase Letter.');
-
-      return;
-    } else if (password.length < 6) {
-      toast.error('Password Must Be Minimum 06 Character.');
-
+    } else if (pin !== confirmPassword) {
+      toast.error('Pin and Confirm Pin should be matched.');
       return;
     }
-    // console.log(name, email, photo, password);
 
-    createUserByEmailAndPassword(email, password)
-      .then(() => {
-        handleUpdateProfile(name, photo);
-        const userInfo = {
-          name,
-          email,
-          photo,
-          role: 'user',
-        };
-        axiosPublic
-          .post(`/users`, userInfo, {
-            withCredentials: true,
-          })
-          .then(res => {
-            console.log(res.data);
-          });
-
-        navigate('/');
-
-        Swal.fire({
-          icon: 'success',
-          title:
-            'Your account is registered successfully!  You have to allow cookie and site data to visit secure page like Applied Jobs and My Jobs page',
-          showConfirmButton: true,
-        });
-      })
-      .catch(error => {
-        console.error(error.message);
-        Swal.fire({
-          icon: 'error',
-          title: error.message,
-          showConfirmButton: true,
-          timer: 2000,
-        });
+    const userData = { name, mobile, email, pin, balance, status, role };
+    const user = { email, pin };
+    console.log(userData);
+    try {
+      const res = await axiosPublic.post('/jwt', user, {
+        withCredentials: true,
       });
-  };
-
-  const navigate = useNavigate();
-  // console.log(navigate);
-  const handleGoogleLogin = () => {
-    signInWithGoogle()
-      .then(result => {
-        // console.log(result.user);
-        const user = result.user;
-        const photo = user?.photoURL;
-        const name = user?.displayName;
-        const email = user?.email;
-
-        handleUpdateProfile(name, photo);
-        const userInfo = {
-          name,
-          email,
-          photo,
-          role: 'user',
-        };
-        axiosPublic
-          .post(`/users`, userInfo, {
+      console.log(res.data);
+      if (res?.data?.success === true) {
+        try {
+          const res = await axiosPublic.post('/register', userData, {
             withCredentials: true,
-          })
-          .then(res => {
-            console.log(res.data);
           });
-
-        navigate('/');
-        Swal.fire({
-          icon: 'success',
-          title:
-            'Log In successful!  You have to allow cookie and site data to visit secure page like Applied Jobs and My Jobs page',
-          showConfirmButton: true,
-        });
-      })
-      .catch(error => {
-        console.error(error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Something went wrong. Please try again.',
-          showConfirmButton: true,
-        });
-      });
+          console.log(res.data);
+          navigate('/login');
+          // setUser(res.data.user);
+        } catch (error) {
+          console.error('Registration failed:', error);
+        }
+      }
+    } catch (error) {
+      console.log(error?.response?.data?.msg);
+      toast.error(error?.response?.data?.msg);
+    }
   };
 
   const [loading, setLoading] = useState(true);
@@ -133,7 +75,7 @@ const Register = () => {
         <title>Job Portal | Register</title>
       </Helmet>
       <div className="w-full  flex justify-between">
-        <div className="w-full md:w-[45%] my-14 h-full px-5 mx-auto md:mx-0 flex flex-col justify-center items-center">
+        <div className="w-full  my-14 h-full px-5 mx-auto md:mx-0 flex flex-col justify-center items-center">
           <div className=" w-60 mb-5">
             <img
               className="h-full w-full "
@@ -141,12 +83,12 @@ const Register = () => {
               alt=""
             />
           </div>
-          <div className=" w-[50%] mb-8">
+          <div className=" w-[20%] mb-8">
             <img src="https://i.postimg.cc/tCZS8f2w/WELCOME.png" alt="" />
           </div>
           <div>
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="space-y-4">
+            <form onSubmit={handleSubmit} className="">
+              <div className=" grid grid-cols-2 gap-10 ">
                 <div>
                   <label
                     htmlFor="name"
@@ -165,18 +107,18 @@ const Register = () => {
                 </div>
                 <div>
                   <label
-                    htmlFor="name"
+                    htmlFor="mobile"
                     className="block mb-2 font-bold text-sm"
                   >
-                    Your Photo URL
+                    Your Mobile Number
                   </label>
                   <input
                     type="text"
-                    name="photo"
-                    id="photo"
+                    name="mobile"
+                    id="mobile"
                     required
-                    placeholder="Your Photo URL"
-                    className="w-full mb-3 px-2 py-2 border-b-2  border-white bg-[#00523f]  "
+                    placeholder="Your Mobile Number"
+                    className="w-full  px-2 py-2 border-b-2  border-white bg-[#00523f]  "
                   />
                 </div>
                 <div>
@@ -221,14 +163,35 @@ const Register = () => {
                       )}
                     </span>{' '}
                   </div>
-                  <div className="flex justify-end">
-                    <a
-                      rel="noopener noreferrer"
-                      href="#"
-                      className="text-xs hover:underline "
+                </div>
+                <div>
+                  <div className="flex  justify-between mb-2">
+                    <label
+                      htmlFor="confirm_password"
+                      className="text-sm font-bold"
                     >
-                      Forgot password?
-                    </a>
+                      Confirm Password
+                    </label>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type={type ? 'text' : 'password'}
+                      name="confirm_password"
+                      id="confirm_password"
+                      required
+                      placeholder="Confirm-password"
+                      className="w-full mb-3 px-2 py-2 border-b-2  border-white bg-[#00523f] "
+                    />
+                    <span
+                      className="absolute right-5 top-2 "
+                      onClick={() => setType(!type)}
+                    >
+                      {type ? (
+                        <IoEye className="text-2xl" />
+                      ) : (
+                        <IoEyeOff className="text-2xl" />
+                      )}
+                    </span>{' '}
                   </div>
                 </div>
               </div>
@@ -251,48 +214,6 @@ const Register = () => {
                 </p>
               </div>
             </form>
-            <div className="flex border-white justify-around items-center ">
-              <div className="divider divider-success   w-full"></div>
-              <h2>OR</h2>
-              <div className="divider divider-success   w-full"></div>
-            </div>
-            <div className="flex flex-col items-center gap-4">
-              <button
-                onClick={handleGoogleLogin}
-                className="flex items-center btn btn-outline bg-slate-400 w-full gap-3 text-white"
-              >
-                <img
-                  src="https://docs.material-tailwind.com/icons/google.svg"
-                  alt="metamask"
-                  className="h-6 w-6"
-                />
-                Continue with Google
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="hidden md:flex flex-col">
-          <div className="w-32 h-[150px] absolute top-0 right-80">
-            <img
-              className="h-full w-full"
-              src="https://i.postimg.cc/kgPcz5VR/chandelier-with-green-round-lampshade.png"
-              alt=""
-            />
-          </div>
-          <div className="h-[300px] w-[250px] absolute top-[30%] right-[22%]">
-            <img
-              className="h-full w-full"
-              src="https://i.postimg.cc/6pTMCPGY/Rectangle.png"
-              alt=""
-            />
-          </div>
-          <div className="w-full h-full">
-            <img
-              className="h-full"
-              src="https://i.postimg.cc/kgypySjg/Rectangle-1.png"
-              alt=""
-            />
           </div>
         </div>
       </div>

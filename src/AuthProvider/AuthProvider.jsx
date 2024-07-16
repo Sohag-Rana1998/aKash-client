@@ -1,103 +1,58 @@
+// src/context/AuthContext.js
+import React, { createContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { createContext, useEffect, useState } from 'react';
-import {
-  GithubAuthProvider,
-  GoogleAuthProvider,
-  createUserWithEmailAndPassword,
-  getAuth,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  signOut,
-  updateProfile,
-} from 'firebase/auth';
-
-import app from '../../public/Firebase/firebase.config';
+import axios from 'axios';
 import useAxiosPublic from '../components/Hooks/useAxiosPublic';
+import useAxiosSecure from '../components/Hooks/useAxiosSecure';
 
-export const AuthContext = createContext(null);
+export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const axiosPublic = useAxiosPublic();
-  const [user, setUser] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const auth = getAuth(app);
+  const axiosSecure = useAxiosSecure();
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const unSubscribe = onAuthStateChanged(auth, currentUser => {
-      // console.log(currentUser);
-      setLoading(true);
-      const userEmail = { email: currentUser?.email } || user?.email;
-      setUser(currentUser);
-
-      if (currentUser) {
-        axiosPublic
-          .post(`/jwt`, userEmail, {
-            withCredentials: true,
-          })
-          .then(res => {
-            setLoading(false);
-            console.log(res.data);
-          });
+    // Check if user is already logged in on initial render
+    const checkLoggedIn = async () => {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+        setLoading(false);
       } else {
-        axiosPublic
-          .post(`/logout`, userEmail, {
-            withCredentials: true,
-          })
-          .then(res => console.log(res.data));
+        try {
+          const res = await axiosSecure.get('/user');
+          setUser(res.data);
+          localStorage.setItem('user', JSON.stringify(res.data));
+        } catch (error) {
+          console.log(error);
+          setUser(null);
+        }
+        setLoading(false);
       }
-      setLoading(false);
-    });
-
-    return () => {
-      unSubscribe();
     };
-  }, [auth, axiosPublic, user]);
 
-  const handleUpdateProfile = (name, photo) => {
-    updateProfile(auth.currentUser, {
-      displayName: name,
-      photoURL: photo,
-    }).then(() => {
-      setUser({ ...user, displayName: name, photoURL: photo });
-    });
+    checkLoggedIn();
+  }, []);
+
+  const logout = async () => {
+    try {
+      await axiosPublic.post('/logout', {}, { withCredentials: true });
+      localStorage.removeItem('user');
+      setUser(null);
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
-  const logOut = () => {
-    setLoading(false);
-    return signOut(auth);
-  };
-
-  const createUserByEmailAndPassword = (email, password) => {
-    return createUserWithEmailAndPassword(auth, email, password);
-  };
-
-  const signInWithEmail = (email, password) => {
-    return signInWithEmailAndPassword(auth, email, password);
-  };
-
-  const githubProvider = new GithubAuthProvider();
-  const googleProvider = new GoogleAuthProvider();
-
-  const signInWithGithub = () => {
-    return signInWithPopup(auth, githubProvider);
-  };
-
-  const signInWithGoogle = () => {
-    return signInWithPopup(auth, googleProvider);
-  };
-
+  console.log(user);
   const authInfo = {
     user,
-    createUserByEmailAndPassword,
-    signInWithEmail,
-    signInWithGithub,
-    signInWithGoogle,
-    logOut,
     loading,
-    handleUpdateProfile,
-  };
 
+    logout,
+  };
   return (
     <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
   );
