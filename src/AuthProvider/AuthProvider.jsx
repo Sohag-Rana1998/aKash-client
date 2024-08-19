@@ -23,8 +23,7 @@ const AuthProvider = ({ children }) => {
       } else {
         try {
           const res = await axiosSecure.get('/user');
-          setUser(res.data);
-          localStorage.setItem('user', JSON.stringify(res.data));
+          console.log(res);
         } catch (error) {
           console.log(error);
           setUser(null);
@@ -45,12 +44,16 @@ const AuthProvider = ({ children }) => {
       console.error('Logout failed:', error);
     }
   };
+  const updateUser = () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    setUser(user);
+  };
 
   console.log(user);
   const authInfo = {
     user,
     loading,
-
+    updateUser,
     logout,
   };
   return (

@@ -1,8 +1,40 @@
-# React + Vite
+# aKash MFS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Live Link: https://akash-mfs.netlify.app/
 
-Currently, two official plugins are available:
+## Server side Github Link: https://github.com/Sohag-Rana1998/aKash-server
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Admin Login Email: admin@gmail.com
+
+## Pin: 19981
+
+## Agent Login Email: agent@gmail.com
+
+## Pin: 19981
+
+# Running the Client Side using bash
+
+1. Clone the Repository:
+
+- git clone https://github.com/Sohag-Rana1998/aKash-client.git
+- cd aKash-client
+
+2. Install Dependencies:
+
+- npm install
+
+3. Set Up Environment Variables:
+
+- Create a .env.local file in the project root directory and add the necessary
+  environment variables.
+
+  4. Run the Application:
+
+  - npm run dev
+
+#### credentials:
+
+- .env.local
+  VITE_API_URL=https://akash-server.vercel.app
+
+VITE_IMGBB_API_KEY=c9c08461c24791130d208d3f08b779d2

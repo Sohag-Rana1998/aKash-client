@@ -1,12 +1,12 @@
+import { useState } from 'react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
-// import useRole from '../hooks/userRole';
-// import useAdmin from '../hooks/useAdmin';
+import useUserData from '../../components/Hooks/useUserData';
 
 const Dashboard = () => {
-  // const { loggedUser } = useRole();
-  const loggedUser = { role: '' };
+  const { user, isLoading, refetch } = useUserData();
+
   return (
-    <div className="flex max-w-7xl    mx-auto">
+    <div className="flex w-full   mx-auto ">
       <div className="w-56 hidden  lg:block pt-5 bg-[#1b71c7]  text-white ">
         <div className=" px-4">
           <Link to={'/'}>
@@ -18,7 +18,7 @@ const Dashboard = () => {
           </Link>
         </div>
         <ul className="menu px-3 mt-10">
-          {loggedUser?.role === 'Admin' && (
+          {user?.role === 'admin' && (
             <>
               <li className="mb-1">
                 <NavLink
@@ -37,7 +37,7 @@ const Dashboard = () => {
 
               <li className="mb-1">
                 <NavLink
-                  to={'/dashboard/manage-properties'}
+                  to={'/dashboard/all-transaction'}
                   className={({ isActive, isPending }) =>
                     isActive
                       ? 'border-2 w-full bg-black/30 font-bold text-white '
@@ -46,21 +46,7 @@ const Dashboard = () => {
                       : ''
                   }
                 >
-                  Manage Properties
-                </NavLink>
-              </li>
-              <li className="mb-1">
-                <NavLink
-                  to={'/dashboard/advertise-property'}
-                  className={({ isActive, isPending }) =>
-                    isActive
-                      ? 'border-2 w-full bg-black/30 font-bold text-white '
-                      : isPending
-                      ? 'pending'
-                      : ''
-                  }
-                >
-                  Advertise Properties
+                  All Transactions
                 </NavLink>
               </li>
               <li className="mb-1">
@@ -68,7 +54,7 @@ const Dashboard = () => {
                   to={'/dashboard/manage-users'}
                   className={({ isActive, isPending }) =>
                     isActive
-                      ? 'border-2 w-full bg-black/30 font-bold text-white'
+                      ? 'border-2 w-full bg-black/30 font-bold text-white '
                       : isPending
                       ? 'pending'
                       : ''
@@ -79,35 +65,21 @@ const Dashboard = () => {
               </li>
               <li className="mb-1">
                 <NavLink
-                  to={'/dashboard/manage-reviews'}
+                  to={'/dashboard/manage-agent'}
                   className={({ isActive, isPending }) =>
                     isActive
-                      ? 'border-2 w-full bg-black/30 font-bold text-white'
+                      ? 'border-2 w-full bg-black/30 font-bold text-white '
                       : isPending
                       ? 'pending'
                       : ''
                   }
                 >
-                  Manage Reviews
-                </NavLink>
-              </li>
-              <li className="mb-1">
-                <NavLink
-                  to={'/dashboard/reported-properties'}
-                  className={({ isActive, isPending }) =>
-                    isActive
-                      ? 'border-2 w-full bg-black/30 font-bold text-white'
-                      : isPending
-                      ? 'pending'
-                      : ''
-                  }
-                >
-                  Reported Property
+                  Manage Agents
                 </NavLink>
               </li>
             </>
           )}
-          {loggedUser?.role === 'Agent' ? (
+          {user?.role === 'agent' && (
             <>
               <li className="mb-1">
                 <NavLink
@@ -125,7 +97,7 @@ const Dashboard = () => {
               </li>
               <li className="mb-1">
                 <NavLink
-                  to={'/dashboard/add-property'}
+                  to={'/dashboard/agent-transaction'}
                   className={({ isActive, isPending }) =>
                     isActive
                       ? 'border-2 w-full bg-black/30 font-bold text-white'
@@ -134,59 +106,13 @@ const Dashboard = () => {
                       : ''
                   }
                 >
-                  Add Property
-                </NavLink>
-              </li>
-              <li className="mb-1">
-                <NavLink
-                  to={'/dashboard/added-properties'}
-                  className={({ isActive, isPending }) =>
-                    isActive
-                      ? 'border-2 w-full bg-black/30 font-bold text-white'
-                      : isPending
-                      ? 'pending'
-                      : ''
-                  }
-                >
-                  My Added Properties
-                </NavLink>
-              </li>
-              <li className="mb-1">
-                <NavLink
-                  to={'/dashboard/requested-properties'}
-                  className={({ isActive, isPending }) =>
-                    isActive
-                      ? 'border-2 w-full bg-black/30 font-bold text-white'
-                      : isPending
-                      ? 'pending'
-                      : ''
-                  }
-                >
-                  {' '}
-                  Requested Properties
-                </NavLink>
-              </li>
-
-              <li className="mb-1">
-                <NavLink
-                  to={'/dashboard/sold-properties'}
-                  className={({ isActive, isPending }) =>
-                    isActive
-                      ? 'border-2 w-full bg-black/30 font-bold text-white'
-                      : isPending
-                      ? 'pending'
-                      : ''
-                  }
-                >
-                  My Sold Properties
+                  Transaction History
                 </NavLink>
               </li>
             </>
-          ) : (
-            <></>
           )}
 
-          {loggedUser?.role || (
+          {user?.role == 'user' && (
             <>
               <li className="mb-1">
                 <NavLink
@@ -204,7 +130,7 @@ const Dashboard = () => {
               </li>
               <li className="mb-1">
                 <NavLink
-                  to={'/dashboard/wishlist'}
+                  to={'/dashboard/transaction-history'}
                   className={({ isActive, isPending }) =>
                     isActive
                       ? 'border-2 w-full bg-black/30 font-bold text-white'
@@ -213,35 +139,7 @@ const Dashboard = () => {
                       : ''
                   }
                 >
-                  Wishlist
-                </NavLink>
-              </li>
-              <li className="mb-1">
-                <NavLink
-                  to={'/dashboard/bought-properties'}
-                  className={({ isActive, isPending }) =>
-                    isActive
-                      ? 'border-2 w-full bg-black/30 font-bold text-white'
-                      : isPending
-                      ? 'pending'
-                      : ''
-                  }
-                >
-                  Property Bought
-                </NavLink>
-              </li>
-              <li className="mb-1">
-                <NavLink
-                  to={'/dashboard/my-reviews'}
-                  className={({ isActive, isPending }) =>
-                    isActive
-                      ? 'border-2 w-full bg-black/30 font-bold text-white'
-                      : isPending
-                      ? 'pending'
-                      : ''
-                  }
-                >
-                  My-Reviews
+                  Transaction History
                 </NavLink>
               </li>
             </>
@@ -262,25 +160,11 @@ const Dashboard = () => {
               HOME
             </NavLink>
           </li>
-          <li className="mb-1">
-            <NavLink
-              to={'/all-properties'}
-              className={({ isActive, isPending }) =>
-                isActive
-                  ? 'border-2 w-full bg-black/30 font-bold text-white'
-                  : isPending
-                  ? 'pending'
-                  : ''
-              }
-            >
-              All Properties
-            </NavLink>
-          </li>
         </ul>
       </div>
       <div
         style={{ scrollbarWidth: 'none' }}
-        className="flex-1 h-auto lg:h-[calc(100vh-80px)]  overflow-y-scroll  "
+        className="flex-1  h-auto lg:h-[calc(100vh-80px)]  overflow-y-scroll  "
       >
         <Outlet />
       </div>

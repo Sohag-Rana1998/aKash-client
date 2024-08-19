@@ -36,8 +36,8 @@ const Register = () => {
       return;
     }
 
-    const userData = { name, mobile, email, pin, balance, status, role };
-    const user = { email, pin };
+    const userData = { name, mobile, email, status, balance, pin, role };
+    const user = { email, pin, mobile };
     console.log(userData);
     try {
       const res = await axiosPublic.post('/jwt', user, {

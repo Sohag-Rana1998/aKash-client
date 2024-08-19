@@ -1,14 +1,16 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { Helmet } from 'react-helmet-async';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { IoEye, IoEyeOff } from 'react-icons/io5';
 import Swal from 'sweetalert2';
 import toast from 'react-hot-toast';
 
 import useAxiosPublic from '../components/Hooks/useAxiosPublic';
+import { AuthContext } from '../AuthProvider/AuthProvider';
 
 const Login = () => {
+  const { updateUser } = useContext(AuthContext);
   const navigate = useNavigate();
   const axiosPublic = useAxiosPublic();
   const [type, setType] = useState(false);
@@ -29,6 +31,7 @@ const Login = () => {
       );
 
       localStorage.setItem('user', JSON.stringify(res.data));
+      updateUser();
       navigate('/');
       console.log(res.data);
     } catch (error) {

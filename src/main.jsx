@@ -12,14 +12,13 @@ const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <AuthProvider>
-      <QueryClientProvider client={queryClient}>
-        <HelmetProvider>
+    <QueryClientProvider client={queryClient}>
+      <HelmetProvider>
+        <AuthProvider>
           <RouterProvider router={router} />
-
-          <Toaster />
-        </HelmetProvider>
-      </QueryClientProvider>
-    </AuthProvider>
+        </AuthProvider>
+        <Toaster />
+      </HelmetProvider>
+    </QueryClientProvider>
   </React.StrictMode>
 );

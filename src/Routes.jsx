@@ -6,6 +6,22 @@ import Home from './Pages/Home';
 import Login from './Pages/Login';
 import Register from './Pages/Register';
 import Dashboard from './Pages/Dashboard/Dashboard';
+import UserHome from './Pages/UserDashboard/UserHome';
+import CheckBalance from './Pages/CheckBalance';
+import SendMoney from './Pages/SendMoney';
+import AgentHome from './Pages/AgentDashboard/AgentHome';
+import CashOut from './Pages/CashOut';
+import CashIn from './Pages/CashIn';
+import Transactions from './Pages/UserDashboard/Transactions';
+import AgentProfile from './Pages/AgentDashboard/AgentProfile';
+import UserProfile from './Pages/UserDashboard/UserProfile';
+import AdminHome from './Pages/AdminDashboard/AdminHome';
+import ManageUsers from './Pages/AdminDashboard/ManageUsers';
+import AdminProfile from './Pages/AdminDashboard/AdminProfile';
+import AllTransaction from './Pages/AdminDashboard/AllTransaction';
+import AgentTransaction from './Pages/AgentDashboard/AgentTransaction';
+import PrivateRoute from './PrivateRoute';
+import ManageAgent from './Pages/AdminDashboard/ManageAgent';
 
 const router = createBrowserRouter([
   {
@@ -33,16 +49,75 @@ const router = createBrowserRouter([
         path: '/dashboard',
         element: (
           <>
-            <Dashboard />
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
           </>
         ),
-        // children: [
-        //   // User Routes
+        children: [
+          // User Routes
 
-        //   {
-        //     path: 'user-profile',
-        //     element: <UserProfle />,
-        //   },
+          {
+            path: 'user-home',
+            element: <UserHome />,
+          },
+          {
+            path: 'user-profile',
+            element: <UserProfile />,
+          },
+          {
+            path: 'check-balance',
+            element: <CheckBalance />,
+          },
+          {
+            path: 'send-money',
+            element: <SendMoney />,
+          },
+          {
+            path: 'cash-out',
+            element: <CashOut />,
+          },
+          {
+            path: 'cash-in',
+            element: <CashIn />,
+          },
+          {
+            path: 'transaction-history',
+            element: <Transactions />,
+          },
+          {
+            path: 'agent-home',
+            element: <AgentHome />,
+          },
+          {
+            path: 'agent-profile',
+            element: <AgentProfile />,
+          },
+          {
+            path: 'agent-transaction',
+            element: <AgentTransaction />,
+          },
+          {
+            path: 'admin-home',
+            element: <AdminHome />,
+          },
+          {
+            path: 'admin-profile',
+            element: <AdminProfile />,
+          },
+          {
+            path: 'manage-users',
+            element: <ManageUsers />,
+          },
+          {
+            path: 'manage-agent',
+            element: <ManageAgent />,
+          },
+          {
+            path: 'all-transaction',
+            element: <AllTransaction />,
+          },
+        ],
         //   {
         //     path: 'wishlist',
         //     element: <Wishlist />,

@@ -1,7 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 const Home = () => {
-  return (
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(setLoading, 500, false);
+  }, []);
+  return loading ? (
+    <div>
+      <h1 className="text-3xl">Loading</h1>
+    </div>
+  ) : (
     <div>
       <div className=" w-full h-[calc(100vh-80px)] bg-[url(https://i.postimg.cc/BnB0WBtF/fintech-main-h2.webp)] text-white  flex items-center justify-center  px-5 text-center py-5 bg-no-repeat bg-center bg-cover">
         <div>
